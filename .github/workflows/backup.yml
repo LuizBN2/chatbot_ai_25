@@ -2,7 +2,7 @@ name: Backup Chatbot Automático
 
 on:
   schedule:
-    - cron: "0 * * * *" # Ejecuta cada hora en punto (UTC)
+    - cron: "*/1 * * * *" # cada minuto
   workflow_dispatch: # También puedes ejecutarlo manualmente desde GitHub
 
 jobs:
