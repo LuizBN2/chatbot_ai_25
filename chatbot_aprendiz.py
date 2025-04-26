@@ -8,6 +8,11 @@ from datetime import datetime
 # --- Cargar conocimiento desde archivo ---
 CONOCIMIENTO_PATH = "conocimiento.json"
 
+# --- Interfaz de la app ---
+st.set_page_config(page_title="Chatbot Explorador", page_icon="🤖")
+st.title("🤖 Chatbot de Bienvenida")
+st.write("Haz una pregunta o responde a las preguntas del bot.")
+
 st.write(f"Ruta absoluta del archivo: {os.path.abspath(CONOCIMIENTO_PATH)}")
 
 
@@ -59,10 +64,7 @@ def guardar_conocimiento():
 def hacer_backup_en_github():
     st.success("✅ Backup en GitHub simulado. (Agrega tu integración real aquí)")
 
-# --- Interfaz de la app ---
-st.set_page_config(page_title="Chatbot Explorador", page_icon="🤖")
-st.title("🤖 Chatbot de Bienvenida")
-st.write("Haz una pregunta o responde a las preguntas del bot.")
+
 
 # --- Carga inicial de datos ---
 conocimiento = cargar_conocimiento()
