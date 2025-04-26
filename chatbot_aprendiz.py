@@ -3,23 +3,13 @@ import json
 import os
 import random
 import requests
-from datetime import datetime
-
-# --- Cargar conocimiento desde archivo ---
-CONOCIMIENTO_PATH = "conocimiento.json"
-
-# --- Interfaz de la app ---
-st.set_page_config(page_title="Chatbot Explorador", page_icon="🤖")
-st.title("🤖 Chatbot de Bienvenida")
-st.write("Haz una pregunta o responde a las preguntas del bot.")
-
-st.write(f"Ruta absoluta del archivo: {os.path.abspath(CONOCIMIENTO_PATH)}")
-
-
-
-import requests
+import base64
 from datetime import datetime, timezone
 
+# --- Ruta del archivo de conocimiento ---
+CONOCIMIENTO_PATH = "conocimiento.json"
+
+# --- Función para obtener estado del último backup ---
 def obtener_estado_backup(ruta_archivo="conocimiento.json"):
     url = "https://api.github.com/repos/LuizBN2/chatbot_ai_25/commits"
     params = {"path": ruta_archivo, "per_page": 1}
@@ -41,8 +31,7 @@ def obtener_estado_backup(ruta_archivo="conocimiento.json"):
     else:
         return "⚠️ No se pudo obtener el estado del backup", "No disponible"
 
-
-
+# --- Función para cargar el conocimiento ---
 def cargar_conocimiento():
     if os.path.exists(CONOCIMIENTO_PATH):
         with open(CONOCIMIENTO_PATH, "r", encoding="utf-8") as file:
@@ -53,20 +42,55 @@ def cargar_conocimiento():
             "preguntas_al_usuario": []
         }
 
+# --- Guardar conocimiento localmente ---
 def guardar_conocimiento():
     with open(CONOCIMIENTO_PATH, "w", encoding="utf-8") as file:
         json.dump(conocimiento, file, ensure_ascii=False, indent=2)
-    st.write(f"📁 Archivo '{CONOCIMIENTO_PATH}' guardado con éxito a las {datetime.now().strftime('%H:%M:%S')}")
-    st.write(f"Contenido actual: {json.dumps(conocimiento, indent=2, ensure_ascii=False)}")
 
-
-# --- Simulación de backup a GitHub ---
+# --- Hacer backup real en GitHub usando API ---
 def hacer_backup_en_github():
-    st.success("✅ Backup en GitHub simulado. (Agrega tu integración real aquí)")
+    token = os.getenv("GH_TOKEN")
+    if not token:
+        st.error("❌ Token de GitHub no disponible en el entorno.")
+        return
 
+    repo = "LuizBN2/chatbot_ai_25"
+    path = "conocimiento.json"
+    url = f"https://api.github.com/repos/{repo}/contents/{path}"
 
+    with open(CONOCIMIENTO_PATH, "rb") as file:
+        contenido = file.read()
+    contenido_base64 = base64.b64encode(contenido).decode("utf-8")
 
-# --- Carga inicial de datos ---
+    headers = {
+        "Authorization": f"token {token}",
+        "Accept": "application/vnd.github.v3+json"
+    }
+
+    get_resp = requests.get(url, headers=headers)
+    sha = get_resp.json().get("sha") if get_resp.status_code == 200 else None
+
+    payload = {
+        "message": "🔄 Backup desde Streamlit",
+        "content": contenido_base64,
+        "branch": "main"
+    }
+    if sha:
+        payload["sha"] = sha
+
+    resp = requests.put(url, headers=headers, json=payload)
+    if resp.status_code in [200, 201]:
+        st.success("✅ Backup realizado exitosamente en GitHub.")
+    else:
+        st.error(f"❌ Error al hacer backup: {resp.status_code}")
+        st.text(resp.text)
+
+# --- Interfaz Streamlit ---
+st.set_page_config(page_title="Chatbot Explorador", page_icon="🤖")
+st.title("🤖 Chatbot de Bienvenida")
+st.write("Haz una pregunta o responde a las preguntas del bot.")
+
+# --- Cargar conocimiento ---
 conocimiento = cargar_conocimiento()
 
 # --- Entrada del usuario ---
@@ -75,7 +99,6 @@ entrada_usuario = st.text_input("Tú:", "")
 if st.button("Enviar") and entrada_usuario.strip():
     entrada = entrada_usuario.strip()
 
-    # Mostrar respuesta si la pregunta está registrada
     if entrada in conocimiento["respuestas_bot"]:
         st.markdown(f"🤖 {conocimiento['respuestas_bot'][entrada]}")
     else:
@@ -86,7 +109,7 @@ if st.button("Enviar") and entrada_usuario.strip():
             guardar_conocimiento()
             st.success("✅ ¡Gracias! El bot ha aprendido esta respuesta.")
 
-# --- Pregunta aleatoria del bot al usuario ---
+# --- Pregunta aleatoria del bot ---
 st.markdown("---")
 st.subheader("👁️ Pregunta del bot para ti")
 
@@ -116,7 +139,7 @@ if st.button("📤 Hacer backup en GitHub"):
     guardar_conocimiento()
     hacer_backup_en_github()
 
-# Mostrar estado y fecha del último backup
+# --- Estado del backup ---
 st.markdown("---")
 st.subheader("📦 Estado del backup automático")
 estado, fecha = obtener_estado_backup()
