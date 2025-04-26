@@ -2,9 +2,40 @@ import streamlit as st
 import json
 import os
 import random
+import requests
+from datetime import datetime
 
 # --- Cargar conocimiento desde archivo ---
 CONOCIMIENTO_PATH = "conocimiento.json"
+
+
+
+
+import requests
+from datetime import datetime, timezone
+
+def obtener_estado_backup(ruta_archivo="conocimiento.json"):
+    url = "https://api.github.com/repos/LuizBN2/chatbot_ai_25/commits"
+    params = {"path": ruta_archivo, "per_page": 1}
+    respuesta = requests.get(url, params=params)
+
+    if respuesta.status_code == 200 and len(respuesta.json()) > 0:
+        fecha_iso = respuesta.json()[0]["commit"]["committer"]["date"]
+        fecha_commit = datetime.fromisoformat(fecha_iso.replace("Z", "+00:00")).astimezone(timezone.utc)
+        ahora = datetime.now(timezone.utc)
+        diferencia = (ahora - fecha_commit).total_seconds()
+
+        if diferencia < 90:
+            estado = "✅ Backup actualizado recientemente"
+        else:
+            estado = "⏳ Backup pendiente o retrasado"
+
+        fecha_formateada = fecha_commit.strftime("%d/%m/%Y %H:%M:%S")
+        return estado, fecha_formateada
+    else:
+        return "⚠️ No se pudo obtener el estado del backup", "No disponible"
+
+
 
 def cargar_conocimiento():
     if os.path.exists(CONOCIMIENTO_PATH):
@@ -78,3 +109,9 @@ st.markdown("---")
 if st.button("📤 Hacer backup en GitHub"):
     guardar_conocimiento()
     hacer_backup_en_github()
+
+# Mostrar estado y fecha del último backup
+st.markdown("---")
+st.subheader("📦 Estado del backup automático")
+estado, fecha = obtener_estado_backup()
+st.info(f"{estado}\n\nÚltimo backup: **{fecha}**")
