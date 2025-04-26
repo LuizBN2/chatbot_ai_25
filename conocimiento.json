@@ -22,6 +22,20 @@
     "¿Has participado antes de un bootcamp?",
     "¿Cuál es tu color favorito?",
     "¿Cuál es tu música favorita?",
-    "¿Qué opinas sobre la inteligencia artificial?"
-  ]
+    "¿Qué opinas sobre la inteligencia artificial?",
+    "¿Qué opinas sobre la inteligencia artificial?",
+    "¿Cómo te puedo ayudar?",
+    "Yo muy bien, gracias por preguntar. ¿Cómo te puedo ayudar?"
+  ],
+  "respuestas_de_usuarios": {
+    "¿Qué expectativas tienes del curso?": [
+      "Aprender sobre inteligencia artificial",
+      "Crear chatbots"
+    ],
+    "¿Dónde trabajas?": [
+      "Soy programador",
+      "Trabajo en la industria"
+    ]
+  }  
+  
 }
