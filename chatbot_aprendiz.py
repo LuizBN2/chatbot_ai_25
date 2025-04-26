@@ -8,6 +8,7 @@ from datetime import datetime
 # --- Cargar conocimiento desde archivo ---
 CONOCIMIENTO_PATH = "conocimiento.json"
 
+st.write(f"Ruta absoluta del archivo: {os.path.abspath(CONOCIMIENTO_PATH)}")
 
 
 
@@ -50,6 +51,9 @@ def cargar_conocimiento():
 def guardar_conocimiento():
     with open(CONOCIMIENTO_PATH, "w", encoding="utf-8") as file:
         json.dump(conocimiento, file, ensure_ascii=False, indent=2)
+    st.write(f"📁 Archivo '{CONOCIMIENTO_PATH}' guardado con éxito a las {datetime.now().strftime('%H:%M:%S')}")
+    st.write(f"Contenido actual: {json.dumps(conocimiento, indent=2, ensure_ascii=False)}")
+
 
 # --- Simulación de backup a GitHub ---
 def hacer_backup_en_github():

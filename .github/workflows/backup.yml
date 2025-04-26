@@ -1,9 +1,9 @@
-name: Backup Chatbot Automático
+name: Backup conocimiento.json
 
 on:
   schedule:
-    - cron: '*/1 * * * *'  # Cada minuto
-  workflow_dispatch:  # Permite ejecución manual
+    - cron: "*/3 * * * *" # Cada 3 minutos
+  workflow_dispatch: # Permite ejecución manual desde GitHub
 
 jobs:
   backup:
@@ -12,16 +12,25 @@ jobs:
       - name: Clonar repositorio
         uses: actions/checkout@v3
 
-      - name: Configurar Git
+      - name: Configurar usuario Git
         run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
+          git config user.name "chatbot-ai"
+          git config user.email "chatbot@bootcamp.ai"
 
-      - name: Hacer commit si hay cambios
+      - name: Ver contenido actual de conocimiento.json
         run: |
-          if git diff --exit-code conocimiento.json; then
-            echo "Sin cambios detectados en conocimiento.json"
-          else
-            git add conocimiento.json
-            git commit -m "Backup automático del chatbot"
-            git push
+          echo "Contenido actual:"
+          cat conocimiento.json || echo "⚠️ Archivo no encontrado"
+
+      - name: Detectar cambios
+        run: |
+          git add conocimiento.json
+          if git diff --cached --quiet; then
+            echo "No hay cambios en conocimiento.json. No se hace commit."
+            exit 0
+          fi
+
+      - name: Hacer commit y push si hubo cambios
+        run: |
+          git commit -m "🔄 Backup automático de conocimiento.json"
+          git push
