@@ -1,0 +1,30 @@
+name: Backup Chatbot Automático
+
+on:
+  schedule:
+    - cron: "0 * * * *" # Ejecuta cada hora en punto (UTC)
+  workflow_dispatch: # También puedes ejecutarlo manualmente desde GitHub
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v3
+
+      - name: Configura Git
+        run: |
+          git config user.name "chatbot-bot"
+          git config user.email "bot@chatbot.com"
+
+      - name: Detecta cambios en conocimiento.json y hace commit si hay cambios
+        run: |
+          git pull
+          git add conocimiento.json
+          if git diff --cached --quiet; then
+            echo "✅ Sin cambios en conocimiento.json. No se hace commit."
+          else
+            git commit -m "🧠 Backup automático del chatbot (cron)"
+            git push
+          fi
