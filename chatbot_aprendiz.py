@@ -109,7 +109,7 @@ if st.button("Enviar") and entrada_usuario.strip():
             guardar_conocimiento()
             st.success("✅ ¡Gracias! El bot ha aprendido esta respuesta.")
 
-# --- Pregunta aleatoria del bot ---
+# --- Pregunta aleatoria del bot al usuario ---
 st.markdown("---")
 st.subheader("👁️ Pregunta del bot para ti")
 
@@ -117,10 +117,21 @@ if conocimiento["preguntas_al_usuario"]:
     pregunta = random.choice(conocimiento["preguntas_al_usuario"])
     st.info(f"🤖 El bot quiere saber: **{pregunta}**")
     respuesta = st.text_input("Tu respuesta:", key="respuesta_usuario")
+    
     if st.button("Guardar respuesta del usuario"):
-        st.success("✅ ¡Gracias por tu respuesta!")
+        if "respuestas_de_usuarios" not in conocimiento:
+            conocimiento["respuestas_de_usuarios"] = {}
+        
+        if pregunta not in conocimiento["respuestas_de_usuarios"]:
+            conocimiento["respuestas_de_usuarios"][pregunta] = []
+        
+        if respuesta.strip():
+            conocimiento["respuestas_de_usuarios"][pregunta].append(respuesta.strip())
+            guardar_conocimiento()
+            st.success("✅ ¡Gracias! Tu respuesta ha sido guardada.")
 else:
     st.warning("⚠️ El bot aún no tiene preguntas para hacerte.")
+
 
 # --- Agregar nueva pregunta del bot ---
 st.markdown("---")
