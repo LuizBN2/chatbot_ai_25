@@ -23,15 +23,5 @@
     "¿Cuál es tu color favorito?",
     "¿Cuál es tu música favorita?",
     "¿Qué opinas sobre la inteligencia artificial?"
-  ],
-  "respuestas_de_usuarios": {
-    "¿Qué expectativas tienes del curso?": [
-      "Aprender sobre inteligencia artificial",
-      "Crear chatbots"
-    ],
-    "¿Dónde trabajas?": [
-      "Soy programador",
-      "Trabajo en la industria"
-    ]
-  }
+  ]
 }
