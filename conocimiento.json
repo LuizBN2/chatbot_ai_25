@@ -1,5 +1,27 @@
 {
-    "respuestas_bot": {},
-    "preguntas_al_usuario": []
-  }
-  
+  "respuestas_bot": {
+    "Hola": "Hola, ¿cómo estas?",
+    "¿Cómo estas?": "Muy bien y tu, preparado para resolver tus inquietudes sobre el bootcamp.",
+    "¿Cuántos años tienes?": "Tengo unas pocas horas de ser creado, tus profes me diseñaron para conocerte mejor.",
+    "¿A qué te dedicas?": "Soy un bot de AI, diseñado para ofrecerte respuestas sencillas sobre el curso.",
+    "¿Qué estudias?": "Inteligencia Artificial, nivel Explorador, ¿y tu?",
+    "¿Qué aprenderé en este curso?": "Todo lo relacionado sobre el Procesamiento de Lenguaje Natural a través de Inteligencia Artificial.",
+    "¿Cómo se llama el curso?": "Inteligencia Artificial Explorador",
+    "¿Qué días tenemos clase?": "Los sábados y domingos hasta el mes de junio.",
+    "¿Cuál es el horario de clases?": "De 7 de la mañana, hasta las 5 de la tarde.",
+    "¿Dónde se dictará el bootcamp o curso?": "En la Universidad de Medellín."
+  },
+  "preguntas_al_usuario": [
+    "¿Qué expectativas tienes del curso?",
+    "¿Dónde trabajas?",
+    "¿Sabes programar?",
+    "¿En qué lenguajes has programado?",
+    "¿Cómo conociste el curso?",
+    "¿Qué opinas del horario del bootcamp?",
+    "¿Para qué te servirá este curso o bootcamp?",
+    "¿Has participado antes de un bootcamp?",
+    "¿Cuál es tu color favorito?",
+    "¿Cuál es tu música favorita?",
+    "¿Qué opinas sobre la inteligencia artificial?"
+  ]
+}

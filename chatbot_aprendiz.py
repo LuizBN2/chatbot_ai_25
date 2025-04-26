@@ -3,99 +3,78 @@ import json
 import os
 import random
 
-# Archivo para guardar conocimientos
-ARCHIVO_CONOCIMIENTO = "conocimiento.json"
+# --- Cargar conocimiento desde archivo ---
+CONOCIMIENTO_PATH = "conocimiento.json"
 
-# Cargar conocimiento o crear uno nuevo
-if os.path.exists(ARCHIVO_CONOCIMIENTO):
-    with open(ARCHIVO_CONOCIMIENTO, "r", encoding="utf-8") as f:
-        conocimiento = json.load(f)
-else:
-    conocimiento = {
-        "respuestas_bot": {
-            "hola": "Hola, ¿cómo estás?",
-            "¿cómo estas?": "Muy bien y tú, preparado para resolver tus inquietudes sobre el bootcamp.",
-            "¿cuántos años tienes?": "Tengo unas pocas horas de ser creado, tus profes me diseñaron para conocerte mejor.",
-            "¿a qué te dedicas?": "Soy un bot de AI, diseñado para ofrecerte respuestas sencillas sobre el curso.",
-            "¿qué estudias?": "Inteligencia Artificial, nivel Explorador, ¿y tú?",
-            "¿qué aprenderé en este curso?": "Todo lo relacionado sobre el Procesamiento de Lenguaje Natural a través de Inteligencia Artificial.",
-            "¿cómo se llama el curso?": "Inteligencia Artificial Explorador",
-            "¿qué días tenemos clase?": "Los sábados y domingos hasta el mes de junio.",
-            "¿cuál es el horario de clases?": "De 7 de la mañana, hasta las 5 de la tarde.",
-            "¿dónde se dictará el bootcamp o curso?": "En la Universidad de Medellín."
-        },
-        "preguntas_al_usuario": [
-            "¿Qué expectativas tienes del curso?",
-            "¿Dónde trabajas?",
-            "¿Sabes programar?",
-            "¿En qué lenguajes has programado?",
-            "¿Cómo conociste el curso?",
-            "¿Qué opinas del horario del bootcamp?",
-            "¿Para qué te servirá este curso o bootcamp?",
-            "¿Has participado antes de un bootcamp?",
-            "¿Cuál es tu color favorito?",
-            "¿Cuál es tu música favorita?",
-            "¿Qué opinas sobre la inteligencia artificial?"
-        ]
-    }
-
-# Guardar conocimiento
-def guardar_conocimiento():
-    with open(ARCHIVO_CONOCIMIENTO, "w", encoding="utf-8") as f:
-        json.dump(conocimiento, f, indent=4, ensure_ascii=False)
-
-st.set_page_config(page_title="Chatbot IA que Aprende", page_icon="🧠")
-st.title("🧠 Chatbot Inteligente - Aprende de ti")
-st.markdown("¡Hola! Estoy listo para responderte y aprender de tus nuevas preguntas.")
-
-# Inicializar historial de conversación
-if "historial" not in st.session_state:
-    st.session_state.historial = []
-
-user_input = st.text_input("Escribe tu mensaje aquí:")
-
-if user_input:
-    user_input_clean = user_input.strip().lower()
-    st.session_state.historial.append(("Tú", user_input))
-
-    if user_input_clean in conocimiento["respuestas_bot"]:
-        respuesta = conocimiento["respuestas_bot"][user_input_clean]
+def cargar_conocimiento():
+    if os.path.exists(CONOCIMIENTO_PATH):
+        with open(CONOCIMIENTO_PATH, "r", encoding="utf-8") as file:
+            return json.load(file)
     else:
-        respuesta = "No sé la respuesta... ¿Quieres enseñármela?"
-        if st.session_state.get("esperando_respuesta") != user_input_clean:
-            st.session_state.esperando_respuesta = user_input_clean
-        else:
-            nueva_respuesta = st.text_input(f"¿Cuál sería una buena respuesta para '{user_input}'?", key="nueva_respuesta")
-            if nueva_respuesta:
-                conocimiento["respuestas_bot"][user_input_clean] = nueva_respuesta
-                guardar_conocimiento()
-                respuesta = "¡Gracias! He aprendido algo nuevo. 😊"
-                st.session_state.esperando_respuesta = None
+        return {
+            "respuestas_bot": {},
+            "preguntas_al_usuario": []
+        }
 
-    st.session_state.historial.append(("Bot", respuesta))
+def guardar_conocimiento():
+    with open(CONOCIMIENTO_PATH, "w", encoding="utf-8") as file:
+        json.dump(conocimiento, file, ensure_ascii=False, indent=2)
 
-# Mostrar historial
-st.subheader("🗨️ Conversación")
-for rol, mensaje in st.session_state.historial:
-    st.markdown(f"**{rol}:** {mensaje}")
-
-# Pregunta aleatoria del bot al usuario
-if st.button("🤖 Hazme una pregunta"):
-    pregunta = random.choice(conocimiento["preguntas_al_usuario"])
-    st.session_state.historial.append(("Bot", pregunta))
-
-import subprocess
-
+# --- Simulación de backup a GitHub ---
 def hacer_backup_en_github():
-    try:
-        subprocess.run(["git", "add", "conocimiento.json"], check=True)
-        subprocess.run(["git", "commit", "-m", "🧠 Backup automático del conocimiento del chatbot"], check=True)
-        subprocess.run(["git", "push"], check=True)
-        st.success("Backup realizado en GitHub.")
-    except Exception as e:
-        st.warning(f"No se pudo hacer el backup automático: {e}")
+    st.success("✅ Backup en GitHub simulado. (Agrega tu integración real aquí)")
 
-# Botón para guardar y subir a GitHub
+# --- Interfaz de la app ---
+st.set_page_config(page_title="Chatbot Explorador", page_icon="🤖")
+st.title("🤖 Chatbot de Bienvenida")
+st.write("Haz una pregunta o responde a las preguntas del bot.")
+
+# --- Carga inicial de datos ---
+conocimiento = cargar_conocimiento()
+
+# --- Entrada del usuario ---
+entrada_usuario = st.text_input("Tú:", "")
+
+if st.button("Enviar") and entrada_usuario.strip():
+    entrada = entrada_usuario.strip()
+
+    # Mostrar respuesta si la pregunta está registrada
+    if entrada in conocimiento["respuestas_bot"]:
+        st.markdown(f"🤖 {conocimiento['respuestas_bot'][entrada]}")
+    else:
+        st.info("🤖 No tengo respuesta para eso todavía. ¿Quieres enseñarme?")
+        nueva_respuesta = st.text_input("Escribe la respuesta que debería dar el bot:")
+        if st.button("Guardar nueva respuesta") and nueva_respuesta.strip():
+            conocimiento["respuestas_bot"][entrada] = nueva_respuesta.strip()
+            guardar_conocimiento()
+            st.success("✅ ¡Gracias! El bot ha aprendido esta respuesta.")
+
+# --- Pregunta aleatoria del bot al usuario ---
+st.markdown("---")
+st.subheader("👁️ Pregunta del bot para ti")
+
+if conocimiento["preguntas_al_usuario"]:
+    pregunta = random.choice(conocimiento["preguntas_al_usuario"])
+    st.info(f"🤖 El bot quiere saber: **{pregunta}**")
+    respuesta = st.text_input("Tu respuesta:", key="respuesta_usuario")
+    if st.button("Guardar respuesta del usuario"):
+        st.success("✅ ¡Gracias por tu respuesta!")
+else:
+    st.warning("⚠️ El bot aún no tiene preguntas para hacerte.")
+
+# --- Agregar nueva pregunta del bot ---
+st.markdown("---")
+st.subheader("➕ Agregar pregunta del bot para el usuario")
+
+nueva_pregunta = st.text_input("Escribe una nueva pregunta que el bot hará al usuario:")
+
+if st.button("Agregar pregunta") and nueva_pregunta.strip():
+    conocimiento["preguntas_al_usuario"].append(nueva_pregunta.strip())
+    guardar_conocimiento()
+    st.success("✅ Pregunta agregada al bot.")
+
+# --- Backup manual ---
+st.markdown("---")
 if st.button("📤 Hacer backup en GitHub"):
     guardar_conocimiento()
     hacer_backup_en_github()
